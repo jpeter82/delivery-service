@@ -1,4 +1,4 @@
 package com.peanuts.delivery.repository;
 
-public interface AddressRepository {
+public interface Postapont {
 }
