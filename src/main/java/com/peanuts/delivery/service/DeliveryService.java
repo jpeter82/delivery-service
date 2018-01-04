@@ -1,23 +1,18 @@
 package com.peanuts.delivery.service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.maps.DistanceMatrixApiRequest;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DistanceMatrix;
 import com.peanuts.delivery.controller.DistanceMatrixApi;
 import com.peanuts.delivery.dao.PostapontDao;
-import com.peanuts.delivery.model.Address;
-import com.peanuts.delivery.model.DeliveryResponse;
-import com.peanuts.delivery.model.Offer;
-import com.peanuts.delivery.model.Postapont;
+import com.peanuts.delivery.model.*;
 import com.peanuts.delivery.util.JsonHandler;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,25 +35,35 @@ public class DeliveryService {
         Address originAddress = JsonHandler.convertJsonToObject(json, "origin", Address.class);
         Address destinationAddress = JsonHandler.convertJsonToObject(json, "destination", Address.class);
 
-        System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:" + destinationAddress.getCity());
-        /*HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");*/
+        List<Postapont> postaponts = collectPostaponts(destinationAddress.getCity());
+        List<Offer> deliveryServices = collectOffers(originAddress, destinationAddress);
 
-        // JSON RESPONSE
-        List<Postapont> postaponts = new ArrayList<>();
-        List<Offer> deliveryServices = new ArrayList<>();
         DeliveryResponse responseObject = new DeliveryResponse(originAddress, destinationAddress, postaponts, deliveryServices);
-
-        String jsonResponse = JsonHandler.convertObjectToJson(responseObject);
 
         return responseObject;
     }
 
-    public HashMap calcDistanceAndDuration (Address origin, Address destenation) throws InterruptedException, ApiException, IOException {
+    public List<Offer> collectOffers(Address origin, Address destination) {
+        List<Offer> offers = new ArrayList<>();
+        LocalDate dateDPD =  LocalDate.now().plusDays(2);
+        LocalDate dateDHL =  LocalDate.now().plusDays(4);
+        String costDPD = "1100";
+        String costDHL = "800";
+        Offer offerDPD = new Offer("DPD", costDPD, Currency.HUF, dateDPD);
+        Offer offerDHL = new Offer("DHL", costDHL, Currency.HUF, dateDHL);
+        offers.add(offerDPD);
+        offers.add(offerDHL);
+        return offers;
+    }
+
+    public List<Postapont> collectPostaponts(String destinationCity) {
+        return new ArrayList<>();
+    }
+
+    public HashMap calcDistanceAndDuration (Address origin, Address destination) throws InterruptedException, ApiException, IOException {
 
         String[] originArray = {origin.getZipcode() + " " + origin.getCity() + " " + origin.getAddress()};
-        String[] destinationArray ={destenation.getZipcode() + " " + destenation.getCity() + " " + destenation.getAddress()};
+        String[] destinationArray ={destination.getZipcode() + " " + destination.getCity() + " " + destination.getAddress()};
         DistanceMatrixApiRequest req = distanceMatrixApi.getDistanceMatrix(distanceMatrixApi.getContext(), originArray, destinationArray);
         DistanceMatrix matrix = req.await();
 

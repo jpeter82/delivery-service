@@ -1,18 +1,18 @@
 package com.peanuts.delivery.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Offer {
 
     private String name;
     private String cost;
     private Currency currency;
-    private Date deadline;
+    private LocalDate deadline;
 
     public Offer() {
     }
 
-    public Offer(String name, String cost, Currency currency, Date deadline) {
+    public Offer(String name, String cost, Currency currency, LocalDate deadline) {
         this.name = name;
         this.cost = cost;
         this.currency = currency;
@@ -43,11 +43,11 @@ public class Offer {
         this.currency = currency;
     }
 
-    public Date getDeadline() {
+    public LocalDate getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
     }
 
