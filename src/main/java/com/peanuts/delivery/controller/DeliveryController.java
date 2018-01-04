@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.maps.DistanceMatrixApiRequest;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DistanceMatrix;
 import com.peanuts.delivery.dao.PostapontDao;
 import com.peanuts.delivery.model.Address;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -22,9 +26,11 @@ import java.util.Map;
 public class DeliveryController {
 
     private PostapontDao postapontDao;
+    private DistanceMatrixApi distanceMatrixApi;
 
-    public DeliveryController(PostapontDao postapontDao) {
+    public DeliveryController(PostapontDao postapontDao, DistanceMatrixApi distanceMatrixApi) {
         this.postapontDao = postapontDao;
+        this.distanceMatrixApi = distanceMatrixApi;
     }
 
     @PostMapping("/query")
@@ -37,6 +43,7 @@ public class DeliveryController {
         JsonElement destinationJson = jsonObject.get("destination");
         Address originAddress = gson.fromJson(originJson, Address.class);
         Address destinationAddress = gson.fromJson(destinationJson, Address.class);
+
         System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:" + destinationAddress.getCity());
         /*HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -55,7 +62,7 @@ public class DeliveryController {
         originJsonObject.addProperty("zipcode", destinationAddress.getZipcode());
         originJsonObject.addProperty("city", destinationAddress.getCity());
 
-        responseJsonObject.addProperty("receivedOrigin", originJsonObject);
+        // responseJsonObject.addProperty("receivedOrigin", originJsonObject);
 
         String jsonResponse = "OK";
         return jsonResponse;
@@ -65,6 +72,23 @@ public class DeliveryController {
     public String saveOrder(Model model, HttpSession session) {
         String jsonResponse = null;
         return jsonResponse;
+    }
+
+    public HashMap getDistanceAndDuration (Address origin, Address destenation) throws InterruptedException, ApiException, IOException {
+
+        String[] originArray = {origin.getZipcode() + " " + origin.getCity() + " " + origin.getAddress()};
+        String[] destinationArray ={destenation.getZipcode() + " " + destenation.getCity() + " " + destenation.getAddress()};
+        DistanceMatrixApiRequest req = distanceMatrixApi.getDistanceMatrix(distanceMatrixApi.getContext(), originArray, destinationArray);
+        DistanceMatrix matrix = req.await();
+
+        System.out.println(matrix.rows[0].elements[0].distance.humanReadable);
+        HashMap results = new HashMap();
+
+        results.put("distance", matrix.rows[0].elements[0].distance.inMeters);
+        results.put("duration", matrix.rows[0].elements[1].duration.inSeconds);
+
+
+        return  results;
     }
 
 }
