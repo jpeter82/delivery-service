@@ -13,6 +13,7 @@ import com.peanuts.delivery.model.Address;
 import com.peanuts.delivery.model.DeliveryResponse;
 import com.peanuts.delivery.model.Offer;
 import com.peanuts.delivery.model.Postapont;
+import com.peanuts.delivery.util.JsonHandler;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,13 +36,10 @@ public class DeliveryService {
     }
 
     public String handleQuery(String json) {
-        // RECEIVE JSON AND CONVERT IT TO ADDRESS
-        JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
-        Gson gson = new Gson();
-        JsonElement originJson = jsonObject.get("origin");
-        JsonElement destinationJson = jsonObject.get("destination");
-        Address originAddress = gson.fromJson(originJson, Address.class);
-        Address destinationAddress = gson.fromJson(destinationJson, Address.class);
+
+        Address originAddress = JsonHandler.convertJsonToObject(json, "origin", Address.class);
+        Address destinationAddress = JsonHandler.convertJsonToObject(json, "destination", Address.class);
+
 
         System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:" + destinationAddress.getCity());
         /*HttpHeaders headers = new HttpHeaders();
@@ -53,8 +51,9 @@ public class DeliveryService {
         List<Offer> deliveryServices = new ArrayList<>();
         DeliveryResponse responseObject = new DeliveryResponse(originAddress, destinationAddress, postaponts, deliveryServices);
 
-        Gson gsonResponse = new Gson();
-        String jsonResponse = gsonResponse.toJson(responseObject);
+        /*Gson gsonResponse = new Gson();
+        String jsonResponse = gsonResponse.toJson(responseObject);*/
+        String jsonResponse = JsonHandler.convertObjectToJson(responseObject);
 
         return jsonResponse;
     }
