@@ -63,7 +63,7 @@ public class DeliveryService {
     }
 
     public List<Postapont> collectPostaponts(String destinationCity) {
-        List<Postapont> postaponts = postapontRepository.findByCityContaining(destinationCity);
+        List<Postapont> postaponts = postapontRepository.findPostapontsByCityContaining(destinationCity);
         return postaponts;
     }
 

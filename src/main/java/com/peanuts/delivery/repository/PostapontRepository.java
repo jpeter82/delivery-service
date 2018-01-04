@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface PostapontRepository extends JpaRepository<Postapont, Long> {
 
-    List<Postapont> findByCityContaining(String city);
+    List<Postapont> findByCityIgnoreCaseContaining(String city);
+    List<Postapont> findPostapontsByCityContaining(String city);
 
 }
 
