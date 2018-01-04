@@ -10,7 +10,7 @@ public class Offer {
     private String cost;
     private Currency currency;
 
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate deadline;
 
     public Offer() {
