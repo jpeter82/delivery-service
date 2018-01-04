@@ -64,7 +64,7 @@ public class DeliveryService {
 
     public List<Postapont> collectPostaponts(String destinationCity) {
         List<Postapont> postaponts = postapontRepository.findPostapontsByCity(destinationCity);
-        return new ArrayList<>();
+        return postaponts;
     }
 
     public HashMap calcDistanceAndDuration (Address origin, Address destination) throws InterruptedException, ApiException, IOException {
