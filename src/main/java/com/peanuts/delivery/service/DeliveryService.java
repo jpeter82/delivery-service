@@ -45,7 +45,7 @@ public class DeliveryService {
 
     public List<Offer> collectOffers(Address origin, Address destination) {
         List<Offer> offers = new ArrayList<>();
-        LocalDate dateDPD =  LocalDate.now().plusDays(2);
+        LocalDate dateDPD =  LocalDate.now().plusDays(3);
         LocalDate dateDHL =  LocalDate.now().plusDays(4);
         String costDPD = "1100";
         String costDHL = "800";
