@@ -12,6 +12,8 @@ import com.peanuts.delivery.model.Address;
 import com.peanuts.delivery.model.DeliveryResponse;
 import com.peanuts.delivery.model.Offer;
 import com.peanuts.delivery.model.Postapont;
+import com.peanuts.delivery.service.DeliveryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -30,62 +32,21 @@ import java.util.Map;
 @Controller
 public class DeliveryController {
 
-    private PostapontDao postapontDao;
-    private DistanceMatrixApi distanceMatrixApi;
-
-    public DeliveryController(PostapontDao postapontDao, DistanceMatrixApi distanceMatrixApi) {
-        this.postapontDao = postapontDao;
-        this.distanceMatrixApi = distanceMatrixApi;
-    }
+    @Autowired
+    private DeliveryService deliveryService;
 
     @PostMapping("/query")
     @ResponseBody
     public String queryDeliveryOptions(@RequestBody String json) {
-        // RECEIVE JSON AND CONVERT IT TO ADDRESS
-        JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
-        Gson gson = new Gson();
-        JsonElement originJson = jsonObject.get("origin");
-        JsonElement destinationJson = jsonObject.get("destination");
-        Address originAddress = gson.fromJson(originJson, Address.class);
-        Address destinationAddress = gson.fromJson(destinationJson, Address.class);
-
-        System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:" + destinationAddress.getCity());
-        /*HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");*/
-
-        // JSON RESPONSE
-        List<Postapont> postaponts = new ArrayList<>();
-        List<Offer> deliveryServices = new ArrayList<>();
-        DeliveryResponse responseObject = new DeliveryResponse(originAddress, destinationAddress, postaponts, deliveryServices);
-
-        Gson gsonResponse = new Gson();
-        String jsonResponse = gsonResponse.toJson(responseObject);
-
+        String jsonResponse = deliveryService.handleQuery(json);
         return jsonResponse;
     }
 
+    @PostMapping("/save-order")
     @RequestMapping(value = "/order", method = RequestMethod.POST)
-    public String saveOrder(Model model, HttpSession session) {
-        String jsonResponse = null;
+    public String saveOrder(@RequestBody String json) {
+        String jsonResponse = deliveryService.saveOrder(json);
         return jsonResponse;
-    }
-
-    public HashMap getDistanceAndDuration (Address origin, Address destenation) throws InterruptedException, ApiException, IOException {
-
-        String[] originArray = {origin.getZipcode() + " " + origin.getCity() + " " + origin.getAddress()};
-        String[] destinationArray ={destenation.getZipcode() + " " + destenation.getCity() + " " + destenation.getAddress()};
-        DistanceMatrixApiRequest req = distanceMatrixApi.getDistanceMatrix(distanceMatrixApi.getContext(), originArray, destinationArray);
-        DistanceMatrix matrix = req.await();
-
-        System.out.println(matrix.rows[0].elements[0].distance.humanReadable);
-        HashMap results = new HashMap();
-
-        results.put("distance", matrix.rows[0].elements[0].distance.inMeters);
-        results.put("duration", matrix.rows[0].elements[1].duration.inSeconds);
-
-
-        return  results;
     }
 
 }
