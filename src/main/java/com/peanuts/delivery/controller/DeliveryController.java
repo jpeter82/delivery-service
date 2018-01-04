@@ -6,6 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.peanuts.delivery.dao.PostapontDao;
 import com.peanuts.delivery.model.Address;
+import com.peanuts.delivery.model.DeliveryResponse;
+import com.peanuts.delivery.model.Offer;
+import com.peanuts.delivery.model.Postapont;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -43,21 +48,13 @@ public class DeliveryController {
         headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");*/
 
         // JSON RESPONSE
-        final JsonObject responseJsonObject = new JsonObject();
+        List<Postapont> postaponts = new ArrayList<>();
+        List<Offer> deliveryServices = new ArrayList<>();
+        DeliveryResponse responseObject = new DeliveryResponse(originAddress, destinationAddress, postaponts, deliveryServices);
 
-        final JsonObject originJsonObject = new JsonObject();
-        originJsonObject.addProperty("address", originAddress.getAddress());
-        originJsonObject.addProperty("zipcode", originAddress.getZipcode());
-        originJsonObject.addProperty("city", originAddress.getCity());
+        Gson gsonResponse = new Gson();
+        String jsonResponse = gsonResponse.toJson(responseObject);
 
-        final JsonObject destinationJsonObject = new JsonObject();
-        originJsonObject.addProperty("address", destinationAddress.getAddress());
-        originJsonObject.addProperty("zipcode", destinationAddress.getZipcode());
-        originJsonObject.addProperty("city", destinationAddress.getCity());
-
-        responseJsonObject.addProperty("receivedOrigin", originJsonObject);
-
-        String jsonResponse = "OK";
         return jsonResponse;
     }
 
