@@ -6,7 +6,9 @@ import com.google.maps.model.DistanceMatrix;
 import com.peanuts.delivery.controller.DistanceMatrixApi;
 import com.peanuts.delivery.dao.PostapontDao;
 import com.peanuts.delivery.model.*;
+import com.peanuts.delivery.repository.PostapontRepository;
 import com.peanuts.delivery.util.JsonHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,7 +21,11 @@ import java.util.List;
 @Service
 public class DeliveryService {
 
+    @Autowired
     private PostapontDao postapontDao;
+    @Autowired
+    private PostapontRepository postapontRepository;
+    @Autowired
     private DistanceMatrixApi distanceMatrixApi;
 
     public DeliveryService() {
@@ -45,8 +51,8 @@ public class DeliveryService {
 
     public List<Offer> collectOffers(Address origin, Address destination) {
         List<Offer> offers = new ArrayList<>();
-        LocalDate dateDPD =  LocalDate.now().plusDays(3);
-        LocalDate dateDHL =  LocalDate.now().plusDays(4);
+        LocalDate dateDPD =  LocalDate.now().plusDays(4);
+        LocalDate dateDHL =  LocalDate.now().plusDays(5);
         String costDPD = "1100";
         String costDHL = "800";
         Offer offerDPD = new Offer("DPD", costDPD, Currency.HUF, dateDPD);
@@ -57,6 +63,7 @@ public class DeliveryService {
     }
 
     public List<Postapont> collectPostaponts(String destinationCity) {
+        List<Postapont> postaponts = postapontRepository.findPostapontsByCity(destinationCity);
         return new ArrayList<>();
     }
 
