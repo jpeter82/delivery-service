@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PostapontRepository extends JpaRepository<Postapont, Long> {
 
-    List<Postapont> findPostapontsByCity(String city);
+    List<Postapont> findByCityContaining(String city);
 
 }
 
