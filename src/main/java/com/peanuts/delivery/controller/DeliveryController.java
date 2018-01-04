@@ -29,21 +29,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 public class DeliveryController {
 
     @Autowired
     private DeliveryService deliveryService;
 
     @PostMapping("/query")
-    @ResponseBody
-    public String queryDeliveryOptions(@RequestBody String json) {
-        String jsonResponse = deliveryService.handleQuery(json);
-        return jsonResponse;
+    public DeliveryResponse queryDeliveryOptions(@RequestBody String json) {
+        DeliveryResponse deliveryResponse = deliveryService.handleQuery(json);
+        return deliveryResponse;
     }
 
     @PostMapping("/save-order")
-    @RequestMapping(value = "/order", method = RequestMethod.POST)
     public String saveOrder(@RequestBody String json) {
         String jsonResponse = deliveryService.saveOrder(json);
         return jsonResponse;

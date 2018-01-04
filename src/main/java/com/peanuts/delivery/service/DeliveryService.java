@@ -35,11 +35,10 @@ public class DeliveryService {
         this.distanceMatrixApi = distanceMatrixApi;
     }
 
-    public String handleQuery(String json) {
+    public DeliveryResponse handleQuery(String json) {
 
         Address originAddress = JsonHandler.convertJsonToObject(json, "origin", Address.class);
         Address destinationAddress = JsonHandler.convertJsonToObject(json, "destination", Address.class);
-
 
         System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:" + destinationAddress.getCity());
         /*HttpHeaders headers = new HttpHeaders();
@@ -51,11 +50,9 @@ public class DeliveryService {
         List<Offer> deliveryServices = new ArrayList<>();
         DeliveryResponse responseObject = new DeliveryResponse(originAddress, destinationAddress, postaponts, deliveryServices);
 
-        /*Gson gsonResponse = new Gson();
-        String jsonResponse = gsonResponse.toJson(responseObject);*/
         String jsonResponse = JsonHandler.convertObjectToJson(responseObject);
 
-        return jsonResponse;
+        return responseObject;
     }
 
     public HashMap calcDistanceAndDuration (Address origin, Address destenation) throws InterruptedException, ApiException, IOException {
