@@ -10,6 +10,7 @@ public interface PostapontRepository extends JpaRepository<Postapont, Long> {
 
     List<Postapont> findByCityIgnoreCaseContaining(String city);
     List<Postapont> findPostapontsByCityContaining(String city);
+    List<Postapont> findPostapontsByCityIgnoreCaseContaining(String city);
 
 }
 

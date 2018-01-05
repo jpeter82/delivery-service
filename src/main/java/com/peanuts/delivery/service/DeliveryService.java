@@ -42,6 +42,8 @@ public class DeliveryService {
         Address destinationAddress = JsonHandler.convertJsonToObject(json, "destination", Address.class);
 
         List<Postapont> postaponts = collectPostaponts(destinationAddress.getCity());
+        System.out.println("CCCCCCCCCCCCCCCCCCCCC: " + destinationAddress.getCity());
+
         List<Offer> deliveryServices = collectOffers(originAddress, destinationAddress);
 
         DeliveryResponse responseObject = new DeliveryResponse(originAddress, destinationAddress, postaponts, deliveryServices);
@@ -63,7 +65,7 @@ public class DeliveryService {
     }
 
     public List<Postapont> collectPostaponts(String destinationCity) {
-        List<Postapont> postaponts = postapontRepository.findPostapontsByCityContaining(destinationCity);
+        List<Postapont> postaponts = postapontRepository.findPostapontsByCityIgnoreCaseContaining(destinationCity);
         return postaponts;
     }
 
